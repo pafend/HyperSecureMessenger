@@ -1,0 +1,24 @@
+{
+  "recommendations": [
+    "dbaeumer.vscode-eslint",
+    "esbenp.prettier-vscode",
+    "ms-vscode.vscode-typescript-next",
+    "orta.vscode-jest",
+    "firsttris.vscode-jest-runner",
+    "streetsidesoftware.code-spell-checker",
+    "vsls-contrib.codetour",
+    "redhat.vscode-yaml",
+    "ms-azuretools.vscode-docker",
+    "mikestead.dotenv",
+    "gruntfuggly.todo-tree",
+    "christian-kohler.path-intellisense",
+    "aaron-bond.better-comments",
+    "yzhang.markdown-all-in-one",
+    "davidanson.vscode-markdownlint",
+    "pkief.material-icon-theme",
+    "github.vscode-pull-request-github",
+    "eamodio.gitlens",
+    "2gua.rainbow-brackets",
+    "naumovs.color-highlight"
+  ]
+} 

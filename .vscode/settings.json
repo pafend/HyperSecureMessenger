@@ -1,0 +1,75 @@
+{
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": true
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-file"
+  },
+  "eslint.validate": ["typescript", "typescriptreact"],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.DS_Store": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/.nyc_output": true,
+    "**/coverage": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/coverage": true
+  },
+  "todo-tree.general.tags": [
+    "BUG",
+    "HACK",
+    "FIXME",
+    "TODO",
+    "XXX",
+    "SECURITY",
+    "VULNERABILITY"
+  ],
+  "todo-tree.highlights.customHighlight": {
+    "SECURITY": {
+      "icon": "shield",
+      "foreground": "white",
+      "background": "red",
+      "iconColour": "red"
+    },
+    "VULNERABILITY": {
+      "icon": "alert",
+      "foreground": "white",
+      "background": "red",
+      "iconColour": "red"
+    }
+  },
+  "cSpell.words": [
+    "libsodium",
+    "randombytes",
+    "NONCEBYTES",
+    "memcmp",
+    "keypair",
+    "Kyber",
+    "mixnet",
+    "mixnets"
+  ],
+  "editor.rulers": [100],
+  "workbench.colorCustomizations": {
+    "editorRuler.foreground": "#3d3d3d"
+  },
+  "terminal.integrated.env.windows": {
+    "NODE_ENV": "development"
+  },
+  "terminal.integrated.env.linux": {
+    "NODE_ENV": "development"
+  },
+  "terminal.integrated.env.osx": {
+    "NODE_ENV": "development"
+  }
+} 

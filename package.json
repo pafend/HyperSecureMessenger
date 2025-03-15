@@ -1,0 +1,94 @@
+{
+  "name": "hypersecure-messenger",
+  "version": "0.1.0",
+  "description": "The world's most uncompromising secure communications platform",
+  "private": true,
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon --exec ts-node src/index.ts",
+    "build": "tsc",
+    "test": "jest",
+    "lint": "eslint . --ext .ts",
+    "audit:sec": "npm audit --production",
+    "crypto:test": "jest --testPathPattern=src/crypto",
+    "crypto:verify": "ts-node src/crypto/verify.ts",
+    "electron:start": "ts-node scripts/dev.js",
+    "electron:build": "tsc && electron-builder",
+    "package": "electron-builder build --publish never"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "hyperswarm": "^4.5.1",
+    "libp2p": "^0.45.0",
+    "libsodium-wrappers": "^0.7.11",
+    "libsodium-wrappers-sumo": "^0.7.11",
+    "noise-peer": "^2.1.2",
+    "secure-random": "^1.1.2",
+    "typescript": "^5.1.6",
+    "zod": "^3.22.2"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/jest": "^29.5.4",
+    "@types/libsodium-wrappers": "^0.7.10",
+    "@types/node": "^20.5.9",
+    "@typescript-eslint/eslint-plugin": "^6.6.0",
+    "@typescript-eslint/parser": "^6.6.0",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.6.3",
+    "eslint": "^8.48.0",
+    "eslint-plugin-security": "^1.7.1",
+    "jest": "^29.6.4",
+    "nodemon": "^3.0.1",
+    "ts-jest": "^29.1.1",
+    "ts-node": "^10.9.1"
+  },
+  "optionalDependencies": {
+    "@types/electron": "^1.6.10"
+  },
+  "build": {
+    "appId": "io.hypersecure.messenger",
+    "productName": "HyperSecure Messenger",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "asar": true,
+    "asarUnpack": [
+      "node_modules/libsodium-wrappers-sumo/**/*"
+    ],
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "mac": {
+      "target": [
+        "dmg"
+      ],
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
+    },
+    "linux": {
+      "target": [
+        "AppImage"
+      ],
+      "category": "Network;Chat"
+    }
+  },
+  "author": "HyperSecure Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hypersecure/messenger.git"
+  }
+} 
