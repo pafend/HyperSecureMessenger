@@ -38,6 +38,56 @@ The architecture enables (when fully implemented):
 - **Dead Drop Messaging**: Communication without direct contact between parties
 - **Counter-Surveillance Features**: Detect and neutralize monitoring attempts
 
+## How To Run
+
+### Prerequisites
+
+- Node.js 18.0.0 or higher
+- npm or yarn
+
+### Installation
+
+1. Clone this repository:
+   ```
+   git clone https://github.com/hypersecure/messenger.git
+   cd messenger
+   ```
+
+2. Install dependencies:
+   ```
+   npm install --ignore-scripts
+   ```
+
+   Note: We use `--ignore-scripts` to prevent native module compilation issues. In a production environment, you would want to properly compile all native dependencies.
+
+3. Run the application:
+   ```
+   npm start
+   ```
+
+   This will start a P2P node that:
+   - Initializes cryptographic subsystems
+   - Sets up a P2P node with a unique ID
+   - Simulates message reception for testing
+
+4. For development:
+   ```
+   npm run dev
+   ```
+
+### Configuration
+
+The application uses a `node-config.json` file for configuration. If this file doesn't exist, a default configuration will be created automatically.
+
+Key configuration options:
+- `listenPort`: Port to listen on (0 means pick an available port)
+- `listenAddress`: Address to bind to
+- `useOnionRouting`: Whether to use onion routing for metadata protection
+- `routingHops`: Number of hops for onion routing
+- `discoveryMethod`: How to discover peers (`manual`, `local-network`, or `dht`)
+- `enableMesh`: Whether to enable mesh networking
+- `knownPeers`: List of known peers to connect to
+
 ## How To Proceed
 
 1. **Fork and build**: This is your foundation. Fork it, customize it, own it.

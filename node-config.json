@@ -1,0 +1,11 @@
+{
+  "listenPort": 0,
+  "listenAddress": "0.0.0.0",
+  "useOnionRouting": true,
+  "routingHops": 3,
+  "discoveryMethod": "manual",
+  "storageLocation": "./secure-storage",
+  "enableMesh": true,
+  "maxConnections": 50,
+  "knownPeers": []
+}

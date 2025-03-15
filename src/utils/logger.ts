@@ -47,7 +47,16 @@ class SecureLogger {
         meta = this.redactSensitiveData(meta);
       }
       
-      metaStr = typeof meta === 'string' ? meta : JSON.stringify(meta);
+      // Special handling for Error objects
+      if (meta instanceof Error) {
+        metaStr = JSON.stringify({
+          message: meta.message,
+          name: meta.name,
+          stack: meta.stack
+        });
+      } else {
+        metaStr = typeof meta === 'string' ? meta : JSON.stringify(meta);
+      }
     }
     
     return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr ? ` ${metaStr}` : ''}`;
@@ -56,6 +65,15 @@ class SecureLogger {
   private redactSensitiveData(data: unknown): unknown {
     if (typeof data !== 'object' || data === null) {
       return data;
+    }
+    
+    // Special handling for Error objects
+    if (data instanceof Error) {
+      return {
+        name: data.name,
+        message: data.message,
+        stack: data.stack
+      };
     }
     
     // Clone to avoid mutating the original

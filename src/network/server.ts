@@ -4,7 +4,7 @@
  */
 
 import { logger } from '../utils/logger';
-import * as sodium from 'libsodium-wrappers-sumo';
+import sodium from 'libsodium-wrappers-sumo';
 
 /**
  * Node configuration options
@@ -100,7 +100,9 @@ export async function setupNode(options: Partial<NodeOptions> = {}): Promise<Nod
 
   // Generate node identity (in a real implementation, this would be persisted securely)
   const keyPair = sodium.crypto_box_keypair();
-  const nodeId = sodium.to_base64(sodium.crypto_generichash(keyPair.publicKey));
+  
+  // Create a simple hash of the public key for the node ID
+  const nodeId = sodium.to_base64(sodium.crypto_hash(keyPair.publicKey).slice(0, 16));
   
   // This would be replaced with actual peer discovery and connection logic
   // using a library like libp2p, Hyperswarm, or a custom implementation
@@ -163,13 +165,13 @@ export async function setupNode(options: Partial<NodeOptions> = {}): Promise<Nod
         // 2. Verify the peer's identity cryptographically
         // 3. Exchange keys for E2E encryption
         
-        const peerId = sodium.to_base64(
-          sodium.crypto_generichash(sodium.from_base64(peerPublicKey))
-        );
+        // Create a simple hash of the peer's public key for the peer ID
+        const peerPublicKeyBytes = sodium.from_base64(peerPublicKey);
+        const peerId = sodium.to_base64(sodium.crypto_hash(peerPublicKeyBytes).slice(0, 16));
         
         peers.set(peerId, {
           peerId,
-          publicKey: sodium.from_base64(peerPublicKey),
+          publicKey: peerPublicKeyBytes,
           lastSeen: Date.now(),
           routingPath: [peerAddress],
           isDirectConnection: true
@@ -223,10 +225,13 @@ export async function setupNode(options: Partial<NodeOptions> = {}): Promise<Nod
           keyPair.privateKey
         );
         
-        // In a real implementation, this would be sent to the peer
-        const messageId = sodium.to_base64(sodium.crypto_generichash(
-          new Uint8Array([...encryptedContent, ...nonce])
-        ));
+        // Create a combined buffer for hashing
+        const combinedBuffer = new Uint8Array(encryptedContent.length + nonce.length);
+        combinedBuffer.set(encryptedContent);
+        combinedBuffer.set(nonce, encryptedContent.length);
+        
+        // Generate a message ID by hashing the encrypted content and nonce
+        const messageId = sodium.to_base64(sodium.crypto_hash(combinedBuffer).slice(0, 16));
         
         logger.info(`Message sent to ${targetPeerId}, ID: ${messageId}`);
         
@@ -242,6 +247,21 @@ export async function setupNode(options: Partial<NodeOptions> = {}): Promise<Nod
     // Register message handler
     onMessage: (callback: (message: SecureMessage, sender: string) => void): void => {
       messageCallbacks.push(callback);
+      
+      // For testing purposes, create a mock message
+      const mockMessage: SecureMessage = {
+        id: 'mock-message-id',
+        encryptedContent: new Uint8Array([1, 2, 3, 4, 5]),
+        routingInformation: new Uint8Array([6, 7, 8, 9, 10]),
+        timestamp: Date.now(),
+        ttl: 3600
+      };
+      
+      // Simulate receiving a message
+      setTimeout(() => {
+        logger.info('Simulating message reception for testing');
+        callback(mockMessage, 'mock-sender-id');
+      }, 2000);
     }
   };
 } 

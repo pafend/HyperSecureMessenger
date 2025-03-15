@@ -44,6 +44,7 @@
     },
     "resolveJsonModule": true,
     "esModuleInterop": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     
     /* Advanced Options */
     "skipLibCheck": true,
