@@ -27,7 +27,8 @@
     "crypto:basic-integration": "ts-node-dev --transpile-only src/crypto/basicIntegration.ts",
     "crypto:trusted-ratchet-test": "ts-node-dev --transpile-only src/crypto/trustedRatchetTest.ts",
     "storage:test": "ts-node-dev --transpile-only src/storage/secureStorageTest.ts",
-    "storage:message-test": "ts-node-dev --transpile-only src/storage/messageStorageTest.ts"
+    "storage:message-test": "ts-node-dev --transpile-only src/storage/messageStorageTest.ts",
+    "integration:full-system": "ts-node-dev --transpile-only src/integration/fullSystemTest.ts"
   },
   "engines": {
     "node": ">=18.0.0"
