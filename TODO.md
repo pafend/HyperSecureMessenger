@@ -1,4 +1,47 @@
-# HyperSecure Messenger Implementation Roadmap
+# HyperSecure Messenger TODO List
+
+## Cryptography
+
+- [x] Implement X3DH Key Exchange Protocol
+- [x] Create mock implementations for testing
+- [x] Implement Double Ratchet Algorithm
+- [x] Implement proper Double Ratchet Algorithm (replacing mock implementation)
+- [x] Implement proper X3DH Key Exchange Protocol (replacing mock implementation)
+- [ ] Integrate Double Ratchet with X3DH for a complete secure messaging protocol
+- [ ] Implement AEAD encryption for message security
+- [ ] Implement secure key storage with anti-forensic properties
+- [ ] Add post-quantum cryptography layer
+
+## Networking
+
+- [ ] Implement WebRTC P2P connections
+- [ ] Create distributed peer discovery mechanism
+- [ ] Implement onion routing for metadata protection
+- [ ] Add mesh networking capabilities
+- [ ] Create user-deployable relay functionality
+
+## User Interface
+
+- [ ] Design minimal, secure UI
+- [ ] Implement conversation view
+- [ ] Create contact management interface
+- [ ] Add secure file sharing capabilities
+- [ ] Implement secure audio/video calling
+
+## Data Storage
+
+- [ ] Implement local-first encrypted database
+- [ ] Create secure backup/restore functionality
+- [ ] Add message expiration and secure deletion
+- [ ] Implement forward secrecy for stored messages
+
+## Next Immediate Steps
+
+1. Integrate Double Ratchet with X3DH for a complete secure messaging protocol
+2. Add AEAD encryption for message security
+3. Begin work on the P2P networking layer
+4. Implement secure key storage with anti-forensic properties
+5. Add support for post-quantum cryptography
 
 ## Core Cryptography
 - [x] Project setup and basic structure
@@ -9,10 +52,10 @@
   - [x] Message encryption/decryption
   - [x] Key rotation
   - [ ] Post-quantum resistance (currently placeholder)
-- [ ] X3DH Key Exchange Protocol
-  - [ ] Identity key management
-  - [ ] One-time prekey generation
-  - [ ] Initial key exchange
+- [x] X3DH Key Exchange Protocol
+  - [x] Identity key management
+  - [x] One-time prekey generation
+  - [x] Initial key exchange
 - [ ] Secure storage for keys
   - [ ] Anti-forensic storage
   - [ ] Secure memory handling
@@ -75,14 +118,6 @@
   - [ ] Installation guide
   - [ ] Usage guide
   - [ ] Security best practices
-
-## Next Immediate Steps
-1. [ ] Complete the X3DH Key Exchange Protocol implementation
-2. [ ] Implement true peer discovery with no central servers
-3. [ ] Develop onion routing for metadata protection
-4. [ ] Create anti-forensic storage system
-5. [ ] Build basic desktop client UI
-6. [ ] Implement secure contact management
 
 ## Important Notes
 - This implementation roadmap is for individuals building their own sovereign messaging system

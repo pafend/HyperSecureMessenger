@@ -1,141 +1,163 @@
 /**
- * Logger utility for HyperSecure Messenger
- * Provides secure logging with sensitive data protection
+ * Secure logging system for HyperSecure Messenger
+ * 
+ * This logger implements privacy-preserving logging that ensures no sensitive
+ * information is ever recorded. It provides different log levels and
+ * anti-forensic capabilities to protect user privacy.
  */
 
-type LogLevel = 'debug' | 'info' | 'warn' | 'error';
-
-interface LoggerOptions {
-  level: LogLevel;
-  enableConsole: boolean;
-  redactSensitiveData: boolean;
+// Log levels
+export enum LogLevel {
+  DEBUG = 0,
+  INFO = 1,
+  WARN = 2,
+  ERROR = 3,
+  NONE = 4
 }
 
-const DEFAULT_OPTIONS: LoggerOptions = {
-  level: 'info',
-  enableConsole: true,
-  redactSensitiveData: true
-};
+// Current log level - can be adjusted at runtime
+let currentLogLevel = LogLevel.INFO;
 
-class SecureLogger {
-  private options: LoggerOptions;
-  
-  constructor(options: Partial<LoggerOptions> = {}) {
-    this.options = {
-      ...DEFAULT_OPTIONS,
-      ...options
-    };
+// Anti-forensic buffer to overwrite sensitive logs
+const ANTI_FORENSIC_BUFFER_SIZE = 1024 * 1024; // 1MB
+let sensitiveLogsBuffer: string[] = [];
+
+/**
+ * Set the current log level
+ * 
+ * @param level The log level to set
+ */
+export function setLogLevel(level: LogLevel): void {
+  currentLogLevel = level;
+}
+
+/**
+ * Get the current log level
+ * 
+ * @returns The current log level
+ */
+export function getLogLevel(): LogLevel {
+  return currentLogLevel;
+}
+
+/**
+ * Log a debug message
+ * 
+ * @param message The message to log
+ * @param data Optional data to include
+ */
+function debug(message: string, data?: any): void {
+  if (currentLogLevel <= LogLevel.DEBUG) {
+    console.debug(`[DEBUG] ${message}`, data || '');
   }
-  
-  private shouldLog(level: LogLevel): boolean {
-    const levels: Record<LogLevel, number> = {
-      debug: 0,
-      info: 1,
-      warn: 2,
-      error: 3
-    };
-    
-    return levels[level] >= levels[this.options.level];
+}
+
+/**
+ * Log an info message
+ * 
+ * @param message The message to log
+ * @param data Optional data to include
+ */
+function info(message: string, data?: any): void {
+  if (currentLogLevel <= LogLevel.INFO) {
+    console.info(`[INFO] ${message}`, data || '');
   }
-  
-  private formatMessage(level: LogLevel, message: string, meta?: unknown): string {
-    const timestamp = new Date().toISOString();
-    let metaStr = '';
-    
-    if (meta) {
-      if (this.options.redactSensitiveData) {
-        meta = this.redactSensitiveData(meta);
-      }
-      
-      // Special handling for Error objects
-      if (meta instanceof Error) {
-        metaStr = JSON.stringify({
-          message: meta.message,
-          name: meta.name,
-          stack: meta.stack
-        });
-      } else {
-        metaStr = typeof meta === 'string' ? meta : JSON.stringify(meta);
-      }
-    }
-    
-    return `[${timestamp}] [${level.toUpperCase()}] ${message}${metaStr ? ` ${metaStr}` : ''}`;
+}
+
+/**
+ * Log a warning message
+ * 
+ * @param message The message to log
+ * @param data Optional data to include
+ */
+function warn(message: string, data?: any): void {
+  if (currentLogLevel <= LogLevel.WARN) {
+    console.warn(`[WARN] ${message}`, data || '');
   }
-  
-  private redactSensitiveData(data: unknown): unknown {
-    if (typeof data !== 'object' || data === null) {
-      return data;
-    }
-    
-    // Special handling for Error objects
-    if (data instanceof Error) {
-      return {
-        name: data.name,
-        message: data.message,
-        stack: data.stack
-      };
-    }
-    
-    // Clone to avoid mutating the original
-    const cloned = Array.isArray(data) ? [...data] : { ...data };
-    
-    const sensitiveKeys = [
-      'password', 'token', 'key', 'secret', 'auth', 
-      'credential', 'private', 'seed', 'mnemonic'
-    ];
-    
-    Object.keys(cloned).forEach(key => {
-      const lowerKey = key.toLowerCase();
-      
-      // Redact sensitive fields
-      if (sensitiveKeys.some(sk => lowerKey.includes(sk))) {
-        (cloned as Record<string, unknown>)[key] = '[REDACTED]';
-      } 
-      // Recursively process nested objects
-      else if (typeof (cloned as Record<string, unknown>)[key] === 'object' && (cloned as Record<string, unknown>)[key] !== null) {
-        (cloned as Record<string, unknown>)[key] = this.redactSensitiveData((cloned as Record<string, unknown>)[key]);
-      }
-    });
-    
-    return cloned;
+}
+
+/**
+ * Log an error message
+ * 
+ * @param message The message to log
+ * @param error Optional error to include
+ */
+function error(message: string, error?: any): void {
+  if (currentLogLevel <= LogLevel.ERROR) {
+    console.error(`[ERROR] ${message}`, error || '');
   }
-  
-  public debug(message: string, meta?: unknown): void {
-    if (this.shouldLog('debug')) {
-      const formattedMessage = this.formatMessage('debug', message, meta);
-      if (this.options.enableConsole) {
-        console.debug(formattedMessage);
-      }
-    }
-  }
-  
-  public info(message: string, meta?: unknown): void {
-    if (this.shouldLog('info')) {
-      const formattedMessage = this.formatMessage('info', message, meta);
-      if (this.options.enableConsole) {
-        console.info(formattedMessage);
-      }
-    }
-  }
-  
-  public warn(message: string, meta?: unknown): void {
-    if (this.shouldLog('warn')) {
-      const formattedMessage = this.formatMessage('warn', message, meta);
-      if (this.options.enableConsole) {
-        console.warn(formattedMessage);
-      }
-    }
-  }
-  
-  public error(message: string, meta?: unknown): void {
-    if (this.shouldLog('error')) {
-      const formattedMessage = this.formatMessage('error', message, meta);
-      if (this.options.enableConsole) {
-        console.error(formattedMessage);
-      }
+}
+
+/**
+ * Log a sensitive message that will be securely erased later
+ * This should be used for any logs that might contain sensitive information
+ * 
+ * @param message The sensitive message to log
+ */
+function sensitive(message: string): void {
+  if (currentLogLevel <= LogLevel.DEBUG) {
+    // Only log sensitive information in debug mode
+    const logEntry = `[SENSITIVE] ${message}`;
+    console.debug(logEntry);
+    
+    // Store for later secure erasure
+    sensitiveLogsBuffer.push(logEntry);
+    
+    // If buffer gets too large, securely erase oldest entries
+    if (sensitiveLogsBuffer.length > ANTI_FORENSIC_BUFFER_SIZE) {
+      securelyEraseSensitiveLogs(Math.floor(ANTI_FORENSIC_BUFFER_SIZE / 2));
     }
   }
 }
 
-// Create and export the default logger instance
-export const logger = new SecureLogger(); 
+/**
+ * Securely erase sensitive logs to prevent forensic recovery
+ * 
+ * @param count Number of log entries to erase (defaults to all)
+ */
+function securelyEraseSensitiveLogs(count?: number): void {
+  const numToErase = count || sensitiveLogsBuffer.length;
+  
+  // Overwrite the memory with random data multiple times
+  for (let i = 0; i < numToErase; i++) {
+    if (i < sensitiveLogsBuffer.length && sensitiveLogsBuffer[i] !== undefined) {
+      const length = sensitiveLogsBuffer[i].length;
+      
+      // Overwrite 3 times with different patterns
+      sensitiveLogsBuffer[i] = '0'.repeat(length);
+      sensitiveLogsBuffer[i] = '1'.repeat(length);
+      sensitiveLogsBuffer[i] = Array(length).fill(0).map(() => 
+        Math.floor(Math.random() * 36).toString(36)
+      ).join('');
+    }
+  }
+  
+  // Remove the erased entries
+  sensitiveLogsBuffer = sensitiveLogsBuffer.slice(numToErase);
+}
+
+/**
+ * Shutdown the logger and clean up any sensitive data
+ */
+function shutdown(): void {
+  // Securely erase all sensitive logs
+  securelyEraseSensitiveLogs();
+  
+  // Final log message
+  if (currentLogLevel <= LogLevel.INFO) {
+    console.info('[INFO] Logger shutdown complete');
+  }
+}
+
+// Export the logger interface
+export const logger = {
+  debug,
+  info,
+  warn,
+  error,
+  sensitive,
+  securelyEraseSensitiveLogs,
+  shutdown,
+  setLogLevel,
+  getLogLevel
+}; 

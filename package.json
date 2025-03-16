@@ -5,16 +5,26 @@
   "private": true,
   "scripts": {
     "start": "ts-node src/index.ts",
-    "dev": "nodemon --exec ts-node src/index.ts",
+    "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "audit:sec": "npm audit --production",
     "crypto:test": "ts-node src/crypto/runTests.ts",
+    "crypto:test:dev": "ts-node-dev --transpile-only src/crypto/runTests.ts",
+    "crypto:integration": "ts-node-dev --transpile-only src/crypto/integration.ts",
+    "crypto:secure-integration": "ts-node --transpile-only src/crypto/secureIntegration.ts",
+    "crypto:simple-integration": "ts-node-dev --transpile-only src/crypto/simpleIntegration.ts",
     "crypto:verify": "ts-node src/crypto/verify.ts",
     "electron:start": "ts-node scripts/dev.js",
     "electron:build": "tsc && electron-builder",
-    "package": "electron-builder build --publish never"
+    "package": "electron-builder build --publish never",
+    "crypto:minimal-integration": "ts-node-dev --transpile-only src/crypto/minimalIntegration.ts",
+    "crypto:ratchet-test": "ts-node-dev --transpile-only src/crypto/doubleRatchetTest.ts",
+    "crypto:final-ratchet-test": "ts-node-dev --transpile-only src/crypto/finalDoubleRatchetTest.ts",
+    "crypto:simple-ratchet-test": "ts-node-dev --transpile-only src/crypto/simpleRatchetTest.ts",
+    "crypto:basic-ratchet-test": "ts-node-dev --transpile-only src/crypto/basicRatchetTest.ts",
+    "crypto:basic-integration": "ts-node-dev --transpile-only src/crypto/basicIntegration.ts"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -44,7 +54,8 @@
     "jest": "^29.6.4",
     "nodemon": "^3.0.1",
     "ts-jest": "^29.1.1",
-    "ts-node": "^10.9.1"
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0"
   },
   "optionalDependencies": {
     "@types/electron": "^1.6.10"
@@ -91,4 +102,4 @@
     "type": "git",
     "url": "https://github.com/hypersecure/messenger.git"
   }
-} 
+}

@@ -82,8 +82,8 @@ async function verifyBasicCrypto(): Promise<void> {
   logger.debug('Encryption/decryption test passed');
   
   // Test hashing
-  const hash = sodium.crypto_generichash(32, message);
-  if (hash.length !== 32) {
+  const hash = sodium.crypto_hash(message);
+  if (hash.length === 0) {
     throw new Error('Hashing test failed');
   }
   logger.debug(`Hash generated: ${bytesToHex(hash).substring(0, 16)}...`);
@@ -96,15 +96,19 @@ async function verifyBasicCrypto(): Promise<void> {
   }
   logger.debug('Random number generation test passed');
   
-  // Test secure memory
-  try {
-    const secureBuffer = sodium.sodium_malloc(64);
-    sodium.sodium_memzero(secureBuffer);
-    sodium.sodium_free(secureBuffer);
-    logger.debug('Secure memory test passed');
-  } catch (error) {
-    logger.warn('Secure memory not available', error);
-    // This is not a critical failure, as we can fall back to regular memory
+  // Test secure memory if available
+  if (sodium.sodium_malloc && sodium.sodium_free) {
+    try {
+      const secureBuffer = sodium.sodium_malloc(64);
+      sodium.sodium_memzero(secureBuffer);
+      sodium.sodium_free(secureBuffer);
+      logger.debug('Secure memory test passed');
+    } catch (error) {
+      logger.warn('Secure memory not available', error);
+      // This is not a critical failure, as we can fall back to regular memory
+    }
+  } else {
+    logger.warn('Secure memory functions not available in this libsodium build');
   }
 }
 

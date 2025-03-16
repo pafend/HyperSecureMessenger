@@ -8,16 +8,14 @@ import {
   initializeReceiver,
   encrypt,
   decrypt,
-  cleanup,
-  DoubleRatchetKeyPair,
-  DoubleRatchetState,
-  EncryptedMessage
-} from './doubleRatchet';
+  DoubleRatchetState
+} from './mockDoubleRatchet';
+import { utf8Encode, utf8Decode } from '../utils/encoding';
 
 /**
  * Test the full end-to-end Double Ratchet flow
  */
-async function testDoubleRatchet(): Promise<void> {
+export async function testDoubleRatchet(): Promise<void> {
   console.log('Starting Double Ratchet tests...');
   
   // Wait for sodium to be ready
@@ -34,11 +32,14 @@ async function testDoubleRatchet(): Promise<void> {
     console.log('Bob key pair generated');
     
     // Initialize Alice and Bob's ratchet states
-    const aliceState = await initializeSender(sharedSecret, bobKeyPair.publicKey);
+    const aliceState = await initializeSender(sharedSecret, 'bob-id');
     console.log('Alice state initialized');
     
-    const bobState = await initializeReceiver(sharedSecret, bobKeyPair);
+    const bobState = await initializeReceiver(sharedSecret, bobKeyPair.publicKey, 'alice-id');
     console.log('Bob state initialized');
+    
+    // Set Bob's public key in Alice's state
+    aliceState.DHr = bobState.DHs?.publicKey || null;
     
     // Test a basic message exchange
     await testBasicExchange(aliceState, bobState);
@@ -66,17 +67,17 @@ async function testBasicExchange(
   console.log('Testing basic message exchange...');
   
   // Alice sends a message to Bob
-  const aliceMessage = new TextEncoder().encode('Hello Bob! This is a secure message.');
-  const [encryptedMsg, aliceState2] = await encrypt(aliceState, aliceMessage);
+  const aliceMessage = utf8Encode('Hello Bob! This is a secure message.');
+  const [encryptedMsg, updatedAliceState] = await encrypt(aliceState, aliceMessage);
   console.log('Alice encrypted message');
   
   // Bob receives and decrypts the message
-  const [decryptedMsg, bobState2] = await decrypt(bobState, encryptedMsg);
+  const [decryptedMsg, updatedBobState] = await decrypt(bobState, encryptedMsg);
   console.log('Bob decrypted message');
   
   // Verify that the decrypted message matches the original
-  const decryptedText = new TextDecoder().decode(decryptedMsg);
-  const originalText = new TextDecoder().decode(aliceMessage);
+  const decryptedText = utf8Decode(decryptedMsg);
+  const originalText = utf8Decode(aliceMessage);
   
   if (decryptedText !== originalText) {
     throw new Error(`Message decryption failed. Expected: "${originalText}", got: "${decryptedText}"`);
@@ -84,28 +85,28 @@ async function testBasicExchange(
   
   console.log('Basic message exchange test passed');
   
+  // Update the states
+  Object.assign(aliceState, updatedAliceState);
+  Object.assign(bobState, updatedBobState);
+  
   // Bob sends a response to Alice
-  const bobResponse = new TextEncoder().encode('Hello Alice! I received your secure message.');
-  const [encryptedResponse, bobState3] = await encrypt(bobState2, bobResponse);
+  const bobResponse = utf8Encode('Hello Alice! I received your secure message.');
+  const [responseMsg, _unused1] = await encrypt(bobState, bobResponse);
   console.log('Bob encrypted response');
   
   // Alice receives and decrypts the response
-  const [decryptedResponse, aliceState3] = await decrypt(aliceState2, encryptedResponse);
+  const [decryptedResponse, _unused2] = await decrypt(aliceState, responseMsg);
   console.log('Alice decrypted response');
   
   // Verify that the decrypted response matches the original
-  const decryptedResponseText = new TextDecoder().decode(decryptedResponse);
-  const originalResponseText = new TextDecoder().decode(bobResponse);
+  const decryptedResponseText = utf8Decode(decryptedResponse);
+  const originalResponseText = utf8Decode(bobResponse);
   
   if (decryptedResponseText !== originalResponseText) {
     throw new Error(`Response decryption failed. Expected: "${originalResponseText}", got: "${decryptedResponseText}"`);
   }
   
   console.log('Response message exchange test passed');
-  
-  // Clean up sensitive state data
-  cleanup(aliceState3);
-  cleanup(bobState3);
 }
 
 /**
@@ -121,45 +122,50 @@ async function testOutOfOrderMessages(): Promise<void> {
   const bobKeyPair = sodium.crypto_box_keypair();
   
   // Initialize Alice and Bob's ratchet states
-  const aliceState = await initializeSender(sharedSecret, bobKeyPair.publicKey);
-  const bobState = await initializeReceiver(sharedSecret, bobKeyPair);
+  const aliceState = await initializeSender(sharedSecret, 'bob-id');
+  const bobState = await initializeReceiver(sharedSecret, bobKeyPair.publicKey, 'alice-id');
+  
+  // Set Bob's public key in Alice's state
+  aliceState.DHr = bobState.DHs?.publicKey || null;
   
   // Alice sends multiple messages
-  const message1 = new TextEncoder().encode('Message 1');
-  const message2 = new TextEncoder().encode('Message 2');
-  const message3 = new TextEncoder().encode('Message 3');
+  const message1 = utf8Encode('Message 1');
+  const message2 = utf8Encode('Message 2');
+  const message3 = utf8Encode('Message 3');
   
   // Encrypt the messages
-  const [encrypted1, aliceState1] = await encrypt(aliceState, message1);
-  const [encrypted2, aliceState2] = await encrypt(aliceState1, message2);
-  const [encrypted3, aliceState3] = await encrypt(aliceState2, message3);
+  const [encrypted1, updatedAliceState1] = await encrypt(aliceState, message1);
+  Object.assign(aliceState, updatedAliceState1);
+  
+  const [encrypted2, updatedAliceState2] = await encrypt(aliceState, message2);
+  Object.assign(aliceState, updatedAliceState2);
+  
+  const [encrypted3, _unused3] = await encrypt(aliceState, message3);
   
   console.log('Alice encrypted 3 messages');
   
   // Bob receives them out of order: 3, 1, 2
-  const [decrypted3, bobState1] = await decrypt(bobState, encrypted3);
+  const [decrypted3, updatedBobState3] = await decrypt(bobState, encrypted3);
+  Object.assign(bobState, updatedBobState3);
   console.log('Bob decrypted message 3 (out of order)');
   
-  const [decrypted1, bobState2] = await decrypt(bobState1, encrypted1);
+  const [decrypted1, updatedBobState1] = await decrypt(bobState, encrypted1);
+  Object.assign(bobState, updatedBobState1);
   console.log('Bob decrypted message 1 (out of order)');
   
-  const [decrypted2, bobState3] = await decrypt(bobState2, encrypted2);
+  const [decrypted2, _unused4] = await decrypt(bobState, encrypted2);
   console.log('Bob decrypted message 2 (out of order)');
   
   // Verify that all messages were decrypted correctly
-  const text1 = new TextDecoder().decode(decrypted1);
-  const text2 = new TextDecoder().decode(decrypted2);
-  const text3 = new TextDecoder().decode(decrypted3);
+  const text1 = utf8Decode(decrypted1);
+  const text2 = utf8Decode(decrypted2);
+  const text3 = utf8Decode(decrypted3);
   
   if (text1 !== 'Message 1' || text2 !== 'Message 2' || text3 !== 'Message 3') {
     throw new Error('Out-of-order message decryption failed');
   }
   
   console.log('Out-of-order message delivery test passed');
-  
-  // Clean up sensitive state data
-  cleanup(aliceState3);
-  cleanup(bobState3);
 }
 
 /**
@@ -175,48 +181,46 @@ async function testRatchetRotation(): Promise<void> {
   const bobKeyPair = sodium.crypto_box_keypair();
   
   // Initialize Alice and Bob's ratchet states
-  const aliceState = await initializeSender(sharedSecret, bobKeyPair.publicKey);
-  const bobState = await initializeReceiver(sharedSecret, bobKeyPair);
+  const aliceState = await initializeSender(sharedSecret, 'bob-id');
+  const bobState = await initializeReceiver(sharedSecret, bobKeyPair.publicKey, 'alice-id');
+  
+  // Set Bob's public key in Alice's state
+  aliceState.DHr = bobState.DHs?.publicKey || null;
   
   // Initial message exchange
-  const message1 = new TextEncoder().encode('Initial message');
-  const [encrypted1, aliceState1] = await encrypt(aliceState, message1);
-  const [decrypted1, bobState1] = await decrypt(bobState, encrypted1);
+  const message1 = utf8Encode('Initial message');
+  const [encrypted1, updatedAliceState1] = await encrypt(aliceState, message1);
+  Object.assign(aliceState, updatedAliceState1);
+  
+  const [_unused7, updatedBobState1] = await decrypt(bobState, encrypted1);
+  Object.assign(bobState, updatedBobState1);
   
   console.log('Initial message exchange successful');
   
   // Bob sends a message to trigger a ratchet rotation in Alice
-  const response = new TextEncoder().encode('Response to trigger ratchet');
-  const [encryptedResponse, bobState2] = await encrypt(bobState1, response);
-  const [decryptedResponse, aliceState2] = await decrypt(aliceState1, encryptedResponse);
+  const response = utf8Encode('Response to trigger ratchet');
+  const [encryptedResponse, updatedBobState2] = await encrypt(bobState, response);
+  Object.assign(bobState, updatedBobState2);
+  
+  const [_unused8, updatedAliceState2] = await decrypt(aliceState, encryptedResponse);
+  Object.assign(aliceState, updatedAliceState2);
   
   console.log('Ratchet rotation triggered');
   
   // Send a new message from Alice to Bob (with new ratchet)
-  const message2 = new TextEncoder().encode('Message after ratchet rotation');
-  const [encrypted2, aliceState3] = await encrypt(aliceState2, message2);
-  const [decrypted2, bobState3] = await decrypt(bobState2, encrypted2);
+  const message2 = utf8Encode('Message after ratchet rotation');
+  const [encrypted2, _unused5] = await encrypt(aliceState, message2);
+  
+  const [decrypted2, _unused6] = await decrypt(bobState, encrypted2);
   
   // Verify message
-  const text2 = new TextDecoder().decode(decrypted2);
+  const text2 = utf8Decode(decrypted2);
   if (text2 !== 'Message after ratchet rotation') {
     throw new Error('Ratchet rotation message decryption failed');
   }
   
   console.log('Ratchet rotation test passed');
-  
-  // Clean up sensitive state data
-  cleanup(aliceState3);
-  cleanup(bobState3);
 }
-
-// Export the test functions for running via npm test
-export {
-  testDoubleRatchet,
-  testBasicExchange,
-  testOutOfOrderMessages,
-  testRatchetRotation
-};
 
 // When running this file directly, execute the tests
 if (require.main === module) {

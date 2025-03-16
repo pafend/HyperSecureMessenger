@@ -3,39 +3,36 @@
  */
 
 import { testDoubleRatchet } from './doubleRatchet.test';
+import { testX3DH } from './x3dh.test';
+import { logger } from '../utils/logger';
 
 /**
- * Run all cryptographic tests
+ * Run all crypto tests
  */
-async function runAllTests(): Promise<void> {
-  console.log('===================================');
-  console.log('HyperSecure Cryptographic Test Suite');
-  console.log('===================================');
-  console.log();
-  
+async function runAllTests() {
   try {
+    logger.info('Starting crypto tests...');
+    
     // Run Double Ratchet tests
-    console.log('Running Double Ratchet tests...');
+    logger.info('Running Double Ratchet tests...');
     await testDoubleRatchet();
-    console.log('✅ Double Ratchet tests passed!\n');
+    logger.info('Double Ratchet tests completed successfully!');
     
-    // Run other crypto tests when implemented
-    // ...
+    // Run X3DH tests
+    logger.info('Running X3DH tests...');
+    await testX3DH();
+    logger.info('X3DH tests completed successfully!');
     
-    console.log('All cryptographic tests passed successfully!');
-    process.exit(0);
+    logger.info('All crypto tests completed successfully!');
   } catch (error) {
-    console.error('❌ Tests failed with error:', error);
+    logger.error('Crypto tests failed:', error);
     process.exit(1);
   }
 }
 
-// Run the tests when this file is executed directly
+// Run all tests when this file is executed directly
 if (require.main === module) {
-  runAllTests().catch(error => {
-    console.error('Uncaught error:', error);
-    process.exit(1);
-  });
+  runAllTests();
 }
 
 export { runAllTests }; 
