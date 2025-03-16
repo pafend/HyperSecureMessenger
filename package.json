@@ -24,7 +24,8 @@
     "crypto:final-ratchet-test": "ts-node-dev --transpile-only src/crypto/finalDoubleRatchetTest.ts",
     "crypto:simple-ratchet-test": "ts-node-dev --transpile-only src/crypto/simpleRatchetTest.ts",
     "crypto:basic-ratchet-test": "ts-node-dev --transpile-only src/crypto/basicRatchetTest.ts",
-    "crypto:basic-integration": "ts-node-dev --transpile-only src/crypto/basicIntegration.ts"
+    "crypto:basic-integration": "ts-node-dev --transpile-only src/crypto/basicIntegration.ts",
+    "crypto:trusted-ratchet-test": "ts-node-dev --transpile-only src/crypto/trustedRatchetTest.ts"
   },
   "engines": {
     "node": ">=18.0.0"
