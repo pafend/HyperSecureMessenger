@@ -25,7 +25,9 @@
     "crypto:simple-ratchet-test": "ts-node-dev --transpile-only src/crypto/simpleRatchetTest.ts",
     "crypto:basic-ratchet-test": "ts-node-dev --transpile-only src/crypto/basicRatchetTest.ts",
     "crypto:basic-integration": "ts-node-dev --transpile-only src/crypto/basicIntegration.ts",
-    "crypto:trusted-ratchet-test": "ts-node-dev --transpile-only src/crypto/trustedRatchetTest.ts"
+    "crypto:trusted-ratchet-test": "ts-node-dev --transpile-only src/crypto/trustedRatchetTest.ts",
+    "storage:test": "ts-node-dev --transpile-only src/storage/secureStorageTest.ts",
+    "storage:message-test": "ts-node-dev --transpile-only src/storage/messageStorageTest.ts"
   },
   "engines": {
     "node": ">=18.0.0"
