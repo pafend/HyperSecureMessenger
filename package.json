@@ -4,7 +4,7 @@
   "description": "The world's most uncompromising secure communications platform",
   "private": true,
   "scripts": {
-    "start": "ts-node src/index.ts",
+    "start": "ts-node-dev --transpile-only src/index.ts",
     "dev": "ts-node-dev --respawn src/index.ts",
     "build": "tsc",
     "test": "jest",
@@ -28,12 +28,27 @@
     "crypto:trusted-ratchet-test": "ts-node-dev --transpile-only src/crypto/trustedRatchetTest.ts",
     "storage:test": "ts-node-dev --transpile-only src/storage/secureStorageTest.ts",
     "storage:message-test": "ts-node-dev --transpile-only src/storage/messageStorageTest.ts",
-    "integration:full-system": "ts-node-dev --transpile-only src/integration/fullSystemTest.ts"
+    "integration:full-system": "ts-node-dev --transpile-only src/integration/fullSystemTest.ts",
+    "network:p2p-test": "ts-node-dev --transpile-only src/network/p2pNetworkTest.ts",
+    "integration:p2p": "ts-node-dev --transpile-only src/integration/p2pIntegrationTest.ts",
+    "identity:test": "ts-node-dev --transpile-only src/identity/identityManagerTest.ts",
+    "integration:identity-network": "ts-node-dev --transpile-only src/integration/identityNetworkTest.ts"
   },
   "engines": {
     "node": ">=18.0.0"
   },
   "dependencies": {
+    "@chainsafe/libp2p-gossipsub": "^6.2.0",
+    "@chainsafe/libp2p-noise": "^11.0.0",
+    "@libp2p/bootstrap": "^6.0.0",
+    "@libp2p/interface-peer-id": "^2.0.1",
+    "@libp2p/kad-dht": "^6.0.1",
+    "@libp2p/mdns": "^6.0.0",
+    "@libp2p/mplex": "^7.1.1",
+    "@libp2p/pubsub-peer-discovery": "^8.0.0",
+    "@libp2p/tcp": "^6.1.0",
+    "@libp2p/websockets": "^5.0.3",
+    "@multiformats/multiaddr": "^11.6.1",
     "express": "^4.18.2",
     "hyperswarm": "^4.5.1",
     "libp2p": "^0.45.0",
@@ -42,6 +57,7 @@
     "noise-network": "^1.1.2",
     "secure-random": "^1.1.2",
     "typescript": "^5.1.6",
+    "uint8arrays": "^3.1.1",
     "zod": "^3.22.2"
   },
   "devDependencies": {

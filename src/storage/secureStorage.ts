@@ -538,27 +538,189 @@ export class SecureStorage {
   }
 
   /**
-   * Destroys this storage instance, clearing memory and stopping timers
+   * Destroy the secure storage, cleaning up all resources
    */
   async destroy(): Promise<void> {
-    // Stop the cleanup timer
+    // Stop cleanup timer
     if (this.cleanupTimer) {
       clearInterval(this.cleanupTimer);
       this.cleanupTimer = null;
     }
-    
+
     // Clear memory storage
     this.memoryStorage.clear();
-    
-    // Zero out the master key (manually since memzero doesn't exist)
-    if (this.masterKey) {
-      // Fill the master key with zeros
-      for (let i = 0; i < this.masterKey.length; i++) {
-        this.masterKey[i] = 0;
+
+    // Delete all files if not memory-only
+    if (!this.settings.memoryOnly) {
+      try {
+        const storagePath = join(process.cwd(), this.settings.storageDir);
+        await fs.rmdir(storagePath, { recursive: true });
+      } catch (error) {
+        logger.error(`Error deleting storage directory: ${error}`);
       }
+    }
+
+    // Reset master key
+    if (this.masterKey) {
+      sodium.memzero(this.masterKey);
       this.masterKey = null;
     }
-    
+
     this.initialized = false;
+    logger.debug('Secure storage destroyed');
+  }
+
+  /**
+   * Get a string value by key with password-based encryption
+   * @param key The key to retrieve
+   * @param password The password to decrypt the value
+   * @returns The decrypted string or null if not found
+   */
+  async get(key: string, password: string): Promise<string | null> {
+    this.ensureInitialized();
+    
+    try {
+      // Derive a key from the password
+      const passwordKey = await this.deriveKeyFromPassword(password);
+      
+      // Retrieve the encrypted item
+      const item = await this.retrieve(key);
+      if (!item) {
+        return null;
+      }
+      
+      // Decrypt the data with the password-derived key
+      const decrypted = await this.decryptWithKey(item.data, passwordKey);
+      
+      // Convert to string
+      const decoder = new TextDecoder();
+      return decoder.decode(decrypted);
+    } catch (error) {
+      logger.error(`Error getting password-protected value for key ${key}: ${error}`);
+      return null;
+    }
+  }
+
+  /**
+   * Store a string value by key with password-based encryption
+   * @param key The key to store
+   * @param value The string value to encrypt and store
+   * @param password The password to encrypt the value
+   */
+  async set(key: string, value: string, password: string): Promise<void> {
+    this.ensureInitialized();
+    
+    try {
+      // Derive a key from the password
+      const passwordKey = await this.deriveKeyFromPassword(password);
+      
+      // Convert string to bytes
+      const encoder = new TextEncoder();
+      const valueBytes = encoder.encode(value);
+      
+      // Encrypt with the password-derived key
+      const encrypted = await this.encryptWithKey(valueBytes, passwordKey);
+      
+      // Store the encrypted data
+      const item: StoredItem = {
+        id: key,
+        type: 'password-protected',
+        data: encrypted,
+        createdAt: Date.now(),
+        expiresAt: 0, // Never expire password-protected data
+        metadata: {
+          isPasswordProtected: true
+        }
+      };
+      
+      await this.store(item);
+    } catch (error) {
+      logger.error(`Error setting password-protected value for key ${key}: ${error}`);
+      throw new Error(`Failed to store password-protected value: ${error}`);
+    }
+  }
+
+  /**
+   * Delete a password-protected value
+   * @param key The key to delete
+   * @param password The password for verification
+   */
+  async delete(key: string, password: string): Promise<void> {
+    this.ensureInitialized();
+    
+    // Verify the password by attempting to get the value
+    const value = await this.get(key, password);
+    if (value === null) {
+      throw new Error('Invalid password or key not found');
+    }
+    
+    // Securely delete the item
+    await this.secureDelete(key);
+  }
+
+  /**
+   * Check if a key exists in the storage
+   * @param key The key to check
+   */
+  async exists(key: string): Promise<boolean> {
+    this.ensureInitialized();
+    
+    if (this.settings.memoryOnly) {
+      return this.memoryStorage.has(key);
+    } else {
+      try {
+        const filePath = this.getFilePath(key);
+        await fs.access(filePath);
+        return true;
+      } catch {
+        return false;
+      }
+    }
+  }
+
+  /**
+   * Derive a cryptographic key from a password
+   * @param password The password to derive the key from
+   */
+  private async deriveKeyFromPassword(password: string): Promise<Uint8Array> {
+    const salt = sodium.randombytes_buf(sodium.crypto_pwhash_SALTBYTES);
+    
+    return sodium.crypto_pwhash(
+      sodium.crypto_secretbox_KEYBYTES,
+      password,
+      salt,
+      sodium.crypto_pwhash_OPSLIMIT_INTERACTIVE,
+      sodium.crypto_pwhash_MEMLIMIT_INTERACTIVE,
+      sodium.crypto_pwhash_ALG_DEFAULT
+    );
+  }
+
+  /**
+   * Encrypt data with a specific key
+   * @param data The data to encrypt
+   * @param key The key to use for encryption
+   */
+  private async encryptWithKey(data: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
+    const nonce = sodium.randombytes_buf(sodium.crypto_secretbox_NONCEBYTES);
+    const ciphertext = sodium.crypto_secretbox_easy(data, nonce, key);
+    
+    // Combine nonce and ciphertext
+    const result = new Uint8Array(nonce.length + ciphertext.length);
+    result.set(nonce);
+    result.set(ciphertext, nonce.length);
+    
+    return result;
+  }
+
+  /**
+   * Decrypt data with a specific key
+   * @param data The data to decrypt
+   * @param key The key to use for decryption
+   */
+  private async decryptWithKey(data: Uint8Array, key: Uint8Array): Promise<Uint8Array> {
+    const nonce = data.slice(0, sodium.crypto_secretbox_NONCEBYTES);
+    const ciphertext = data.slice(sodium.crypto_secretbox_NONCEBYTES);
+    
+    return sodium.crypto_secretbox_open_easy(ciphertext, nonce, key);
   }
 } 

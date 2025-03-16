@@ -1,237 +1,157 @@
-# HyperSecure Messenger: The Manifesto
+# HyperSecure Messenger
 
-![HyperSecure](https://placeholder-for-logo-url.com)
+A fully decentralized, end-to-end encrypted messenger with no central servers or services. 
 
-**True digital sovereignty through absolute security.**
+> **IMPORTANT**: HyperSecure Messenger is never distributed as a pre-built application. All users must build the software themselves from source code. There are no official builds or binaries. [Learn more about our self-build policy](disclaimer.md#self-build-only-policy).
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-![Development Status](https://img.shields.io/badge/Status-Manifesto_Phase-red)
-![Security Rating](https://img.shields.io/badge/Security-Maximum_By_Design-darkgreen)
+[Read our Manifesto](manifesto.md) | [Important Disclaimers](disclaimer.md)
 
-## A Declaration of Digital Independence
+## Architecture
 
-HyperSecure is not a product. It is a blueprint for true digital sovereignty—a technical manifesto made real through code. In a world where "secure" messaging has been co-opted and compromised, HyperSecure represents the conceptual framework for those who demand absolute security and privacy without compromise.
+HyperSecure Messenger is built with a modular architecture consisting of several key components:
 
-This repository contains the foundational architecture for what will become your own sovereign communications system, built by you, for you, answerable to no one but you.
+### Cryptography Layer
 
-### Build It Yourself or Not At All
+- **Trusted Ratchet**: Secure messaging protocol based on the Double Ratchet algorithm
+- **Identity Management**: Cryptographic identity creation, verification, and management
+- **Anti-Forensic Storage**: Secure storage with plausible deniability and secure deletion
 
-**This software is not distributed. It is not a service. It will never be shipped.**
+### Networking Layer
 
-HyperSecure is designed to be built, configured, and deployed exclusively by the end user. There are no central servers, no company, no support team—only the architecture and the code that you compile and control completely.
+- **P2P Network**: Fully decentralized peer-to-peer networking using libp2p
+- **Distributed Discovery**: Find peers without central servers
+- **Onion Routing**: Protect metadata through multi-hop routing
 
-### Uncompromising Design Principles
+### Storage Layer
 
-- **Quantum-Resistant Encryption**: Mathematical security that withstands attacks from both classical and quantum computers
-- **Zero Metadata Trail**: No permanent records of who communicated with whom
-- **Decentralized Trust**: No central authority, no backdoors, no "master keys"
-- **Anti-Forensic By Design**: Leaves no digital artifacts on device storage
-- **Human-Layer Security**: Protects against the most overlooked attack vector—coercion of the human user
+- **Secure Storage**: Encrypted local storage with anti-forensic capabilities
+- **Message Storage**: Secure storage and retrieval of messages with automatic expiration
+- **Backup & Recovery**: Secure, encrypted backups with recovery options
 
-## Technical Sovereignty Features
+### User Interface
 
-The architecture enables (when fully implemented):
+- **Minimal UI**: Simple, secure interface focused on privacy
+- **Verification UI**: Tools for verifying identities and securing communications
+- **Accessibility**: Designed to be usable by everyone
 
-- **Neural Typing Obfuscation**: Mask your typing pattern to defeat biometric identification
-- **Optical Security Layer**: Prevent screen surveillance, recording, and capturing
-- **Memory-Only Operation**: Critical data exists only in encrypted RAM, never touching permanent storage
-- **Dead Drop Messaging**: Communication without direct contact between parties
-- **Counter-Surveillance Features**: Detect and neutralize monitoring attempts
-
-## How To Run
+## Getting Started
 
 ### Prerequisites
 
-- Node.js 18.0.0 or higher
+- Node.js 16+
 - npm or yarn
+- Git for source code verification
+- Basic knowledge of command line tools
 
-### Installation
+### Installation (Self-Build Only)
 
-1. Clone this repository:
-   ```
-   git clone https://github.com/hypersecure/messenger.git
-   cd messenger
-   ```
+HyperSecure Messenger adheres to a strict self-build policy. Each user must:
 
-2. Install dependencies:
-   ```
-   npm install --ignore-scripts
-   ```
-
-   Note: We use `--ignore-scripts` to prevent native module compilation issues. In a production environment, you would want to properly compile all native dependencies.
-
-3. Run the application:
-   ```
-   npm start
-   ```
-
-   This will start a P2P node that:
-   - Initializes cryptographic subsystems
-   - Sets up a P2P node with a unique ID
-   - Simulates message reception for testing
-
-4. For development:
-   ```
-   npm run dev
-   ```
-
-### Configuration
-
-The application uses a `node-config.json` file for configuration. If this file doesn't exist, a default configuration will be created automatically.
-
-Key configuration options:
-- `listenPort`: Port to listen on (0 means pick an available port)
-- `listenAddress`: Address to bind to
-- `useOnionRouting`: Whether to use onion routing for metadata protection
-- `routingHops`: Number of hops for onion routing
-- `discoveryMethod`: How to discover peers (`manual`, `local-network`, or `dht`)
-- `enableMesh`: Whether to enable mesh networking
-- `knownPeers`: List of known peers to connect to
-
-## How To Proceed
-
-1. **Fork and build**: This is your foundation. Fork it, customize it, own it.
-2. **Study the architecture**: Understand every component before deploying it.
-3. **Implement incrementally**: Follow the [TODO.md](TODO.md) roadmap, building each component with care.
-4. **Test rigorously**: Verify the security of your implementation at every step.
-5. **Deploy privately**: Set up your own node infrastructure, controlled only by you.
-
-## Critical Notice: Legal & Ethical Responsibility
-
-**By accessing this code, you accept full responsibility for your use of it.**
-
-HyperSecure deliberately implements maximum-strength privacy and security features that **may not comply with legal requirements in your jurisdiction**. This may include:
-
-- Laws requiring encryption backdoors
-- Mandatory key escrow
-- Data retention requirements
-- Surveillance compliance obligations
-- Anti-privacy regulations
-
-The authors make no claims, promises, or guarantees about the legality of building, deploying, or using this system, and explicitly disclaim any responsibility for how you choose to use this architecture.
-
-**You alone must determine whether building and using this system complies with the laws applicable to you.**
-
-## For Whom Is This Intended?
-
-- Those for whom privacy is a fundamental right worth defending
-- Those who believe ownership of your communications should be absolute
-- Those in need of protection from surveillance and targeted compromise
-- Those who understand that true security comes only from systems you fully control
-
-## Technical Foundation
-
-The architecture incorporates:
-
-- **Triple-Layer Encryption**: Three independent cryptographic systems for message contents, metadata, and routing
-- **Formal Mathematical Security**: Designs based on provable security properties
-- **Post-Quantum Primitives**: Cryptographic implementations that resist quantum attack vectors
-- **Zero-Knowledge Protocols**: Authentication without revealing identity
-- **Mesh Networking Capability**: Routing without centralized infrastructure
-
-## Development Approach
-
-This is a sovereign system. The development path follows these principles:
-
-1. **Understand everything**: No code goes into your implementation without your comprehension
-2. **Trust no dependencies**: Review all libraries and external code thoroughly
-3. **Verify mathematically**: Use formal verification where possible
-4. **Test adversarially**: Assume sophisticated attackers with unlimited resources
-5. **Deploy minimally**: The smallest possible attack surface is the goal
-
-## License
-
-HyperSecure is licensed under the [MIT License](LICENSE), allowing you to use, modify, and adapt it to your needs.
-
----
-
-*"True security is not purchased, downloaded, or provided. It is built, understood, and maintained."*
-
-## Current Status
-
-HyperSecure Messenger is under active development. The following components have been implemented:
-
-- Core cryptographic primitives using libsodium
-- Double Ratchet Algorithm with post-quantum enhancements
-- Basic P2P networking architecture
-- Cryptographic verification system
-
-## Security Features
-
-### Double Ratchet Algorithm
-
-The messenger implements the Double Ratchet Algorithm with enhancements for post-quantum security. This provides:
-
-- **Perfect Forward Secrecy (PFS)**: Compromise of current keys cannot expose past messages
-- **Post-Compromise Security (PCS)**: The system can recover from key compromise
-- **Post-Quantum Resistance**: Enhanced to resist attacks from quantum computers
-
-### Cryptographic Verification
-
-The system includes comprehensive verification of all cryptographic components to ensure they're functioning correctly. Run the verification with:
-
-```
-npm run crypto:verify
-```
-
-## Documentation
-
-- [Security Guide](docs/SECURITY_GUIDE.md): Comprehensive security considerations
-- [Build Guide](docs/BUILD_GUIDE.md): Instructions for building your own instance
-- [Architecture Overview](docs/ARCHITECTURE.md): High-level system design
-
-## Building and Running
-
-### Prerequisites
-
-- Node.js 18+
-- npm or yarn
-- Git
-
-### Installation
+1. Verify the source code
+2. Build the application themselves
+3. Maintain their own installation
 
 ```bash
-# Clone the repository
+# Clone the repository and verify the source
 git clone https://github.com/yourusername/hypersecure-messenger.git
 cd hypersecure-messenger
 
-# Install dependencies
+# Examine the code for any security concerns
+# This step is critical - never skip code review
+
+# Install dependencies after reviewing package.json
 npm install
 
-# Run the verification
-npm run crypto:verify
+# Build the application
+npm run build
 
-# Start the application
+# Start your self-built application
 npm start
 ```
 
-## Development
+No pre-built binaries are ever provided. This ensures you have complete control and visibility over the code running on your device.
+
+### Development
 
 ```bash
 # Run in development mode
 npm run dev
 
+# Build for production
+npm run build
+
 # Run tests
 npm test
-
-# Run cryptographic tests
-npm run crypto:test
 ```
 
-## Security Notice
+## Security Features
 
-HyperSecure Messenger is designed for users who require the highest level of security and privacy. It prioritizes security over convenience and requires users to understand the security implications of their actions.
+- **End-to-End Encryption**: All messages are encrypted using strong cryptography
+- **Perfect Forward Secrecy**: Key rotation ensures past communications remain secure
+- **Identity Verification**: Manual verification of contacts through secure channels
+- **Anti-Forensic Storage**: Secure deletion with multiple overwrite passes
+- **Metadata Protection**: Minimize metadata leakage through network design
+- **No Central Points of Trust**: Fully decentralized architecture
 
-**Important**: Security depends on correct implementation. Users must verify every aspect of their implementation against their specific threat model.
+## Testing
 
-## License
+The project includes comprehensive tests for all components:
 
-MIT
+```bash
+# Run all tests
+npm test
+
+# Run specific test suites
+npm run storage:test
+npm run identity:test
+npm run network:p2p-test
+
+# Run integration tests
+npm run integration:p2p
+npm run integration:identity-network
+npm run integration:full-system
+```
+
+## Project Structure
+
+```
+src/
+├── crypto/           # Cryptographic components
+│   ├── trustedRatchet.ts
+│   └── README.md
+├── identity/         # Identity management
+│   ├── identityManager.ts
+│   └── README.md
+├── network/          # P2P networking
+│   ├── p2pNetwork.ts
+│   └── README.md
+├── storage/          # Secure storage
+│   ├── secureStorage.ts
+│   ├── messageStorage.ts
+│   └── README.md
+├── integration/      # Integration tests
+│   ├── p2pIntegrationTest.ts
+│   ├── identityNetworkTest.ts
+│   └── fullSystemTest.ts
+├── utils/            # Utility functions
+│   └── logger.ts
+└── index.ts          # Application entry point
+```
 
 ## Contributing
 
-Contributions are welcome. Please read the [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
+Contributions are welcome! Please read our [Contributing Guidelines](CONTRIBUTING.md) before submitting a pull request.
 
-## Disclaimer
+## Security
 
-This software is provided "as is", without warranty of any kind. Use at your own risk. 
+If you discover a security vulnerability, please do NOT open an issue. Email security@example.com instead.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+## Acknowledgments
+
+- The Signal Protocol for inspiration on secure messaging
+- The libp2p project for decentralized networking capabilities
+- The crypto community for their ongoing work in secure communications 
