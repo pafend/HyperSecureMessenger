@@ -145,4 +145,93 @@ HyperSecure is licensed under the [MIT License](LICENSE), allowing you to use, m
 
 ---
 
-*"True security is not purchased, downloaded, or provided. It is built, understood, and maintained."* 
+*"True security is not purchased, downloaded, or provided. It is built, understood, and maintained."*
+
+## Current Status
+
+HyperSecure Messenger is under active development. The following components have been implemented:
+
+- Core cryptographic primitives using libsodium
+- Double Ratchet Algorithm with post-quantum enhancements
+- Basic P2P networking architecture
+- Cryptographic verification system
+
+## Security Features
+
+### Double Ratchet Algorithm
+
+The messenger implements the Double Ratchet Algorithm with enhancements for post-quantum security. This provides:
+
+- **Perfect Forward Secrecy (PFS)**: Compromise of current keys cannot expose past messages
+- **Post-Compromise Security (PCS)**: The system can recover from key compromise
+- **Post-Quantum Resistance**: Enhanced to resist attacks from quantum computers
+
+### Cryptographic Verification
+
+The system includes comprehensive verification of all cryptographic components to ensure they're functioning correctly. Run the verification with:
+
+```
+npm run crypto:verify
+```
+
+## Documentation
+
+- [Security Guide](docs/SECURITY_GUIDE.md): Comprehensive security considerations
+- [Build Guide](docs/BUILD_GUIDE.md): Instructions for building your own instance
+- [Architecture Overview](docs/ARCHITECTURE.md): High-level system design
+
+## Building and Running
+
+### Prerequisites
+
+- Node.js 18+
+- npm or yarn
+- Git
+
+### Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/hypersecure-messenger.git
+cd hypersecure-messenger
+
+# Install dependencies
+npm install
+
+# Run the verification
+npm run crypto:verify
+
+# Start the application
+npm start
+```
+
+## Development
+
+```bash
+# Run in development mode
+npm run dev
+
+# Run tests
+npm test
+
+# Run cryptographic tests
+npm run crypto:test
+```
+
+## Security Notice
+
+HyperSecure Messenger is designed for users who require the highest level of security and privacy. It prioritizes security over convenience and requires users to understand the security implications of their actions.
+
+**Important**: Security depends on correct implementation. Users must verify every aspect of their implementation against their specific threat model.
+
+## License
+
+MIT
+
+## Contributing
+
+Contributions are welcome. Please read the [contributing guidelines](CONTRIBUTING.md) before submitting a pull request.
+
+## Disclaimer
+
+This software is provided "as is", without warranty of any kind. Use at your own risk. 

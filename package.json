@@ -10,7 +10,7 @@
     "test": "jest",
     "lint": "eslint . --ext .ts",
     "audit:sec": "npm audit --production",
-    "crypto:test": "jest --testPathPattern=src/crypto",
+    "crypto:test": "ts-node src/crypto/runTests.ts",
     "crypto:verify": "ts-node src/crypto/verify.ts",
     "electron:start": "ts-node scripts/dev.js",
     "electron:build": "tsc && electron-builder",

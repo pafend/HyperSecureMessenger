@@ -1,125 +1,88 @@
 # HyperSecure Messenger Implementation Roadmap
 
-## Phase 1: Core Cryptography & P2P Architecture (2 months)
-- [x] Set up project structure and dependencies
-  - [x] Create TypeScript configuration with strict settings
-  - [x] Set up linting and security validation
-  - [x] Initialize basic project architecture
-- [x] Implement initial cryptographic foundations
-  - [x] Create libsodium integration for core primitives
-  - [x] Implement cryptographic self-test module
-  - [x] Set up secure memory allocation when available
-  - [ ] Complete double-ratchet with post-quantum enhancements
-  - [ ] Implement zero-knowledge authentication system
-  - [ ] Build secure key generation and storage
-  - [ ] Develop anti-forensic storage system
-- [x] Create foundation for P2P networking layer
-  - [x] Establish basic node identity management
-  - [x] Create interface for peer connections
-  - [x] Set up message routing architecture
-  - [ ] Implement direct P2P connections with NAT traversal
-  - [ ] Build distributed peer discovery (DHT-based)
-  - [ ] Create onion routing implementation for metadata protection
-  - [ ] Develop mesh networking capabilities for connectivity in restricted environments
-- [x] Establish sovereign node architecture
-  - [x] Create node identity management
-  - [x] Implement autonomous operation without central servers
-  - [ ] Build local-first data storage with encryption
-  - [ ] Develop offline messaging capabilities
+## Core Cryptography
+- [x] Project setup and basic structure
+- [x] Cryptographic primitives initialization
+- [x] Key generation and management
+- [x] Double Ratchet Algorithm with post-quantum enhancements
+  - [x] Basic implementation
+  - [x] Message encryption/decryption
+  - [x] Key rotation
+  - [ ] Post-quantum resistance (currently placeholder)
+- [ ] X3DH Key Exchange Protocol
+  - [ ] Identity key management
+  - [ ] One-time prekey generation
+  - [ ] Initial key exchange
+- [ ] Secure storage for keys
+  - [ ] Anti-forensic storage
+  - [ ] Secure memory handling
+  - [ ] Deniable storage
 
-## Phase 2: Security Hardening & Anti-Surveillance (2 months)
-- [ ] Implement human-layer security features
-  - [ ] Develop neural typing obfuscation
-  - [ ] Create anti-screenshot and anti-screen-recording measures
-  - [ ] Build memory-only operational mode
-  - [ ] Implement duress detection and countermeasures
-- [ ] Enhance metadata protection
-  - [ ] Create perfect forward secrecy implementation
-  - [ ] Implement post-compromise security mechanisms
-  - [ ] Develop dead drop messaging system
-  - [ ] Build location obfuscation techniques
-- [ ] Add hardware security integration
-  - [ ] Integrate with TPM/secure enclaves when available
-  - [ ] Implement hardware-based key protection
-  - [ ] Create secure boot verification
-  - [ ] Develop anti-tampering measures
+## P2P Architecture
+- [x] Basic P2P network setup
+- [ ] True peer discovery (no central servers)
+  - [ ] Local network discovery
+  - [ ] DHT implementation
+  - [ ] Rendezvous points
+- [ ] Onion routing for metadata protection
+  - [ ] Route establishment
+  - [ ] Message encapsulation
+  - [ ] Exit node handling
+- [ ] Mesh networking capabilities
+  - [ ] Relay functionality
+  - [ ] Network resilience
+  - [ ] Offline message handling
 
-## Phase 3: Desktop Client Implementation (2 months)
-- [ ] Create Electron-based desktop application
-  - [ ] Implement secure IPC between main and renderer processes
-  - [ ] Implement secure UI with anti-forensic features
-  - [ ] Build interface for P2P connection management
-  - [ ] Create secure messaging interface
-  - [ ] Develop anti-surveillance UI features
-- [ ] Add secure file sharing
-  - [ ] Implement end-to-end encrypted file transfer
-  - [ ] Create secure file storage with encryption
-  - [ ] Build self-destructing file capabilities
-  - [ ] Develop file verification and integrity checks
-- [ ] Implement secure calls
-  - [ ] Create E2E encrypted audio/video calling
-  - [ ] Implement P2P direct connection for calls
-  - [ ] Build fallback relay capabilities for difficult network situations
-  - [ ] Develop bandwidth adaptation for various network conditions
+## Security Hardening
+- [ ] Memory protection
+  - [ ] Secure allocation/deallocation
+  - [ ] Protection against cold boot attacks
+- [ ] Side-channel attack mitigations
+  - [ ] Constant-time operations
+  - [ ] Cache timing protections
+- [ ] Anti-forensic measures
+  - [ ] Secure deletion
+  - [ ] Plausible deniability
+  - [ ] Hidden volumes
+- [ ] Metadata minimization
+  - [ ] Zero storage of contact information
+  - [ ] Minimal logging
+  - [ ] Traffic obfuscation
 
-## Phase 4: Mobile Client Implementation (3 months)
-- [ ] Create mobile application architecture
-  - [ ] Build React Native or native app foundations
-  - [ ] Implement mobile-specific security features
-  - [ ] Create secure UI for small screens
-  - [ ] Develop battery-efficient P2P connectivity
-- [ ] Add mobile-specific protections
-  - [ ] Implement anti-forensic storage on mobile
-  - [ ] Create OS integration for enhanced security
-  - [ ] Build biometric authentication integration
-  - [ ] Develop mobile sensor security features
-- [ ] Enhance mobile usability
-  - [ ] Optimize performance for mobile devices
-  - [ ] Implement efficient battery usage patterns
-  - [ ] Create responsive and secure UI components
-  - [ ] Build mobile-specific anti-surveillance features
+## Client Implementations
+- [ ] Desktop client (Electron)
+  - [ ] Basic UI
+  - [ ] Message handling
+  - [ ] Contact management
+- [ ] Mobile client (React Native)
+  - [ ] Platform-specific security
+  - [ ] Background operation
+  - [ ] Push notification alternatives
+- [ ] CLI client
+  - [ ] Basic functionality
+  - [ ] Scriptable interface
+  - [ ] Headless operation
 
-## Phase 5: Advanced Features & Testing (2 months)
-- [ ] Add group messaging with security
-  - [ ] Implement secure group key management
-  - [ ] Create efficient group message distribution
-  - [ ] Develop anti-surveillance features for groups
-  - [ ] Build secure group management features
-- [ ] Enhance synchronization
-  - [ ] Implement secure multi-device synchronization
-  - [ ] Create secure key sharing between devices
-  - [ ] Build conversation history synchronization
-  - [ ] Develop device authentication protocol
-- [ ] Comprehensive security testing
-  - [ ] Perform cryptographic verification
-  - [ ] Conduct penetration testing
-  - [ ] Test against advanced surveillance techniques
-  - [ ] Verify anti-forensic capabilities
-
-## Phase 6: Documentation & Self-Deployment (1 month)
-- [x] Create comprehensive documentation
-  - [x] Write detailed installation and running instructions
-  - [ ] Create advanced build instructions including native modules
-  - [x] Develop architecture documentation
-  - [ ] Write API and protocol documentation
-- [ ] Enable self-deployment
-  - [ ] Create detailed self-hosting documentation
-  - [ ] Provide scripts for secure deployment
-  - [ ] Document network setup requirements
-  - [ ] Build verification tools for deployment integrity
-- [ ] Finalize security guidance
-  - [x] Document threat models and countermeasures
-  - [ ] Create operational security guide
-  - [ ] Develop guidance for secure usage
-  - [ ] Provide advice for high-risk environments
+## Documentation
+- [x] Architecture overview
+- [x] Security guide
+- [x] Build guide
+- [ ] Protocol specifications
+  - [ ] Messaging protocol
+  - [ ] Network protocol
+  - [ ] Storage format
+- [ ] User guides
+  - [ ] Installation guide
+  - [ ] Usage guide
+  - [ ] Security best practices
 
 ## Next Immediate Steps
-1. Implement complete double-ratchet algorithm with post-quantum enhancements
-2. Create true peer discovery mechanism using DHT
-3. Implement onion routing for metadata protection
-4. Build secure local storage with anti-forensic properties
-5. Develop offline message queueing and delivery
-6. Create basic UI for desktop client with secure patterns
+1. [ ] Complete the X3DH Key Exchange Protocol implementation
+2. [ ] Implement true peer discovery with no central servers
+3. [ ] Develop onion routing for metadata protection
+4. [ ] Create anti-forensic storage system
+5. [ ] Build basic desktop client UI
+6. [ ] Implement secure contact management
 
 ## Important Notes
 - This implementation roadmap is for individuals building their own sovereign messaging system
